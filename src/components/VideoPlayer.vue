@@ -1,4 +1,6 @@
 <script setup>
+import { ref } from 'vue'
+
 const props = defineProps({
   src: String,
   username: String,
@@ -6,12 +8,24 @@ const props = defineProps({
 })
 
 const emit = defineEmits(['open-chat'])
+
+const liked = ref(false)
+const likes = ref(Math.floor(Math.random() * 900) + 100)
+
+function toggleLike() {
+  liked.value = !liked.value
+  likes.value += liked.value ? 1 : -1
+}
 </script>
 
 <template>
   <div class="video-player">
     <video :src="props.src" autoplay muted loop playsinline></video>
     <div class="buttons">
+      <button :class="{ liked: liked }" @click="toggleLike">
+        ♥
+        <small>{{ likes }}</small>
+      </button>
       <button @click="emit('open-chat')">💬</button>
     </div>
     <div class="details">
@@ -43,11 +57,29 @@ video {
   bottom: 120px;
 }
 
+.buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
 .buttons button {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   background: none;
   border: none;
+  color: #fff;
   font-size: 2rem;
   cursor: pointer;
+}
+
+.buttons small {
+  font-size: 0.75rem;
+}
+
+.buttons button.liked {
+  color: #fe2c55;
 }
 
 .details {
