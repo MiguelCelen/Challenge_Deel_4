@@ -1,5 +1,5 @@
 <script setup>
-import { reactive, onMounted } from 'vue'
+import { reactive, ref, onMounted } from 'vue'
 
 const url = 'https://lab5-p379.onrender.com/api/v1/messages/'
 
@@ -12,15 +12,31 @@ const form = reactive({
   text: ''
 })
 
-onMounted(async () => {
-  const res = await fetch(url)
-  const data = await res.json()
+const loading = ref(true)
+const failed = ref(false)
 
-  // de nieuwste berichten staan achteraan, dus omdraaien
-  data.reverse().forEach((message) => {
-    messages.push(message)
-  })
-})
+async function loadMessages() {
+  loading.value = true
+  failed.value = false
+
+  try {
+    const res = await fetch(url)
+    const data = await res.json()
+
+    // de nieuwste berichten staan achteraan, dus omdraaien
+    messages.length = 0
+    data.reverse().forEach((message) => {
+      messages.push(message)
+    })
+  } catch (error) {
+    // de gratis server slaapt soms en stuurt dan eerst geen json terug
+    failed.value = true
+  }
+
+  loading.value = false
+}
+
+onMounted(loadMessages)
 
 async function sendMessage() {
   if (!form.user.trim() || !form.text.trim()) {
@@ -46,6 +62,12 @@ async function sendMessage() {
       <h4>Reacties ({{ messages.length }})</h4>
       <button @click="emit('close')">Sluiten</button>
     </div>
+
+    <p v-if="loading" class="info">Berichten laden...</p>
+    <p v-else-if="failed" class="info">
+      De server is nog aan het opstarten.
+      <button @click="loadMessages">Opnieuw</button>
+    </p>
 
     <ul>
       <li v-for="message in messages" :key="message._id">
@@ -94,6 +116,23 @@ async function sendMessage() {
   background: none;
   border: none;
   color: #8a8b91;
+  cursor: pointer;
+}
+
+.info {
+  padding: 16px;
+  text-align: center;
+  color: #8a8b91;
+  font-size: 0.9rem;
+}
+
+.info button {
+  margin-left: 6px;
+  padding: 4px 10px;
+  border: none;
+  border-radius: 6px;
+  background: #fe2c55;
+  color: #fff;
   cursor: pointer;
 }
 
