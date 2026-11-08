@@ -4,11 +4,16 @@ const props = defineProps({
   username: String,
   caption: String
 })
+
+const emit = defineEmits(['open-chat'])
 </script>
 
 <template>
   <div class="video-player">
     <video :src="props.src" autoplay muted loop playsinline></video>
+    <div class="buttons">
+      <button @click="emit('open-chat')">💬</button>
+    </div>
     <div class="details">
       <h3>@{{ props.username }}</h3>
       <p>{{ props.caption }}</p>
@@ -30,6 +35,19 @@ video {
   width: 100%;
   height: 100%;
   object-fit: cover;
+}
+
+.buttons {
+  position: absolute;
+  right: 14px;
+  bottom: 120px;
+}
+
+.buttons button {
+  background: none;
+  border: none;
+  font-size: 2rem;
+  cursor: pointer;
 }
 
 .details {

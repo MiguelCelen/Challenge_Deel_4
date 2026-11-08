@@ -1,6 +1,7 @@
 <script setup>
-import { reactive } from 'vue'
+import { reactive, ref } from 'vue'
 import VideoPlayer from './components/VideoPlayer.vue'
+import Chat from './components/Chat.vue'
 
 const videos = reactive([
   {
@@ -16,6 +17,8 @@ const videos = reactive([
     caption: 'Het is eindelijk vrijdag! 🎉'
   }
 ])
+
+const chatOpen = ref(false)
 </script>
 
 <template>
@@ -26,6 +29,9 @@ const videos = reactive([
       :src="video.src"
       :username="video.username"
       :caption="video.caption"
+      @open-chat="chatOpen = true"
     />
   </div>
+
+  <Chat v-if="chatOpen" @close="chatOpen = false" />
 </template>
