@@ -7,6 +7,11 @@ const emit = defineEmits(['close'])
 
 const messages = reactive([])
 
+const form = reactive({
+  user: '',
+  text: ''
+})
+
 onMounted(async () => {
   const res = await fetch(url)
   const data = await res.json()
@@ -16,6 +21,23 @@ onMounted(async () => {
     messages.push(message)
   })
 })
+
+async function sendMessage() {
+  if (!form.user.trim() || !form.text.trim()) {
+    return
+  }
+
+  const res = await fetch(url, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ user: form.user.trim(), text: form.text.trim() })
+  })
+  const newMessage = await res.json()
+
+  // bovenaan toevoegen, de lijst past zich meteen aan
+  messages.unshift(newMessage)
+  form.text = ''
+}
 </script>
 
 <template>
@@ -31,6 +53,12 @@ onMounted(async () => {
         <span class="text">{{ message.text }}</span>
       </li>
     </ul>
+
+    <form @submit.prevent="sendMessage">
+      <input v-model="form.user" placeholder="Jouw naam" />
+      <input v-model="form.text" placeholder="Schrijf een reactie..." />
+      <button type="submit">Verstuur</button>
+    </form>
   </div>
 </template>
 
