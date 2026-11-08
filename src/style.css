@@ -9,3 +9,9 @@ body {
   background-color: #000;
   color: #fff;
 }
+
+#feed {
+  height: 100vh;
+  overflow-y: auto;
+  scroll-snap-type: y mandatory;
+}

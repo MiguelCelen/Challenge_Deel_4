@@ -23,6 +23,7 @@ const props = defineProps({
   max-width: 460px;
   height: 100vh;
   margin: 0 auto;
+  scroll-snap-align: start;
 }
 
 video {
